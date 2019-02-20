@@ -44,8 +44,17 @@ end
 
 # Ruby and bundler
 if node['platform_family'] == 'debian'
-  node.default['ruby-ng']['ruby_version'] = node['ruby-version']
-  include_recipe 'ruby-ng::dev'
+  # node.default['ruby-ng']['ruby_version'] = node['ruby-version']
+  # include_recipe 'ruby-ng::dev'
+  node.default['rvm']['default_ruby'] = node['ruby-version']
+  node.default['rvm']['user_default_ruby'] = node['ruby-version']
+  node.default['rvm']['user_installs'] = [
+    {
+      'user'   => node['deployer']['user'],
+      'rubies' => [node['ruby-version']]
+    }
+  ]
+  include_recipe 'rvm::user'
 else
   ruby_pkg_version = node['ruby-version'].split('.')[0..1]
   package "ruby#{ruby_pkg_version.join('')}"
@@ -79,9 +88,13 @@ gem_package 'bundler' do
 end
 
 if node['platform_family'] == 'debian'
-  link '/usr/local/bin/bundle' do
-    to '/usr/bin/bundle'
-  end
+  # bundle_path = "/home/#{node['deployer']['user']}/.rvm/gems/ruby-#{node['ruby-version']}@global/bin/bundle"
+  # link '/usr/bin/bundle' do
+  #   to bundle_path
+  # end
+  # link '/usr/local/bin/bundle' do
+  #   to bundle_path
+  # end
 else
   link '/usr/local/bin/bundle' do
     to '/usr/local/bin/bundler'

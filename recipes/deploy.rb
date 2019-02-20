@@ -78,7 +78,15 @@ every_enabled_application do |application|
         :deploy_before_symlink, context: self, items: databases + [source, framework, appserver, worker, webserver]
       )
 
-      run_callback_from_file(File.join(release_path, 'deploy', 'before_symlink.rb'))
+      # run_callback_from_file(File.join(release_path, 'deploy', 'before_symlink.rb'))
+
+      # Temp?
+      # See: https://github.com/ajgon/opsworks_ruby/issues/80#issuecomment-299075843
+      execute "yarn install" do
+        command "yarn install"
+        environment env_vars
+        cwd release_path
+      end
     end
 
     before_restart do

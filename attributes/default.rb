@@ -12,6 +12,10 @@ default['nginx']['source']['modules'] = %w[
   nginx::http_ssl_module nginx::http_realip_module nginx::http_gzip_static_module nginx::headers_more_module
   nginx::http_stub_status_module
 ]
+default['rvm_path'] = "/home/#{default['deployer']['user']}/.rvm"
+default['rvm_bin'] = "#{default['rvm_path']}/bin/rvm"
+default['rvm_prefix'] = "#{default['rvm_bin']} #{default['ruby-version']} do"
+default['bundle'] = "#{default['rvm_prefix']} bundle"
 
 default['deploy']['timeout'] = 600
 
@@ -27,7 +31,7 @@ default['defaults']['global']['symlinks'] = {
 default['defaults']['global']['create_dirs_before_symlink'] =
   %w[tmp public config ../../shared/cache ../../shared/assets]
 default['defaults']['global']['purge_before_symlink'] = %w[log tmp/cache tmp/pids public/system public/assets]
-default['defaults']['global']['rollback_on_error'] = true
+default['defaults']['global']['rollback_on_error'] = false
 default['defaults']['global']['logrotate_rotate'] = 30
 default['defaults']['global']['logrotate_frequency'] = 'daily'
 default['defaults']['global']['logrotate_options'] = %w[
@@ -129,12 +133,12 @@ default['defaults']['framework']['adapter'] = 'rails'
 
 default['defaults']['framework']['migrate'] = true
 default['defaults']['framework']['migration_command'] =
-  'case $(/usr/local/bin/bundle exec rake db:version 2>&1) in ' \
-  '*"ActiveRecord::NoDatabaseError"*) /usr/local/bin/bundle exec rake db:setup;; ' \
-  '*) /usr/local/bin/bundle exec rake db:migrate;; ' \
-  'esac'
+  "case $(#{node['bundle']} exec rake db:version 2>&1) in " \
+  "*\"ActiveRecord::NoDatabaseError\"*) #{node['bundle']} exec rake db:setup;; " \
+  "*) #{node['bundle']} exec rake db:migrate;; " \
+  "esac"
 default['defaults']['framework']['assets_precompile'] = true
-default['defaults']['framework']['assets_precompilation_command'] = '/usr/local/bin/bundle exec rake assets:precompile'
+default['defaults']['framework']['assets_precompilation_command'] = "#{node['bundle']} exec rake assets:precompile"
 default['defaults']['framework']['envs_in_console'] = false
 
 # worker

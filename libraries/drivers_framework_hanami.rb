@@ -11,9 +11,9 @@ module Drivers
 
       def settings
         assets_command = node['deploy'][app['shortname']][driver_type]['assets_precompilation_command'] ||
-                         '/usr/local/bin/bundle exec hanami assets precompile'
+                         "#{node['bundle']} exec hanami assets precompile"
         migration_command = node['deploy'][app['shortname']][driver_type]['migration_command'] ||
-                            '/usr/local/bin/bundle exec hanami db migrate'
+                            "#{node['bundle']} exec hanami db migrate"
 
         super.merge(
           deploy_environment:

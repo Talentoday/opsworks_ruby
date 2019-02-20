@@ -43,7 +43,7 @@ end
 
 def start
   puts "Starting <%= @name.capitalize %> #{APP_NAME}"
-  run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec <%= @command %>"
+  run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && <%= node['bundle'] %> exec <%= @command %>"
 end
 
 def stop
