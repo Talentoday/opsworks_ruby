@@ -16,7 +16,7 @@ depends 'ruby-ng'
 depends 's3_file', '= 2.8.5'
 depends 'sudo', '= 5.4.4'
 depends 'ohai', '< 5.3'
-depends 'rvm'
+depends 'rvm', '= 0.9.4'
 
 # indirect dependency, but breaks against the chef_version if updated to 3.1.0
 depends 'seven_zip', '~> 2.0'

@@ -46,6 +46,13 @@ end
 if node['platform_family'] == 'debian'
   # node.default['ruby-ng']['ruby_version'] = node['ruby-version']
   # include_recipe 'ruby-ng::dev'
+
+  # By default, we get options '--no-ri --no-doc' appended, those options have been deprecated
+  # with more recent versions of rubygem
+  # https://github.com/rubygems/rubygems/pull/2354
+  node.default['rvm']['rvm_gem_options'] = "--no-document"
+  node.default['rvm']['global_gems'] = []
+  node.default['rvm']['user_global_gems'] = []
   node.default['rvm']['default_ruby'] = node['ruby-version']
   node.default['rvm']['user_default_ruby'] = node['ruby-version']
   node.default['rvm']['user_installs'] = [
