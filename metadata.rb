@@ -10,11 +10,12 @@ version '1.13.0'
 chef_version '~> 12.0' if respond_to?(:chef_version)
 
 depends 'apt', '< 7.0'
-depends 'nginx'
-depends 'logrotate'
+depends 'nginx', '< 9.0'
+depends 'logrotate', '2.2.1' # 2.2.2 breaks tests for whatever reason
 depends 'ruby-ng'
-depends 's3_file'
-depends 'sudo'
+depends 's3_file', '= 2.8.5'
+depends 'sudo', '= 5.4.4'
+depends 'ohai', '< 5.3'
 depends 'rvm'
 
 # indirect dependency, but breaks against the chef_version if updated to 3.1.0
