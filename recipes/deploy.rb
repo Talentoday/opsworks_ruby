@@ -4,6 +4,11 @@ prepare_recipe
 
 include_recipe 'opsworks_ruby::configure'
 
+chef_gem "aws-sdk-s3" do
+  version "~> 1"
+  action :install
+end
+
 every_enabled_application do |application|
   databases = []
   every_enabled_rds(self, application) do |rds|
@@ -82,11 +87,11 @@ every_enabled_application do |application|
 
       # Temp?
       # See: https://github.com/ajgon/opsworks_ruby/issues/80#issuecomment-299075843
-      execute "yarn install" do
-        command "yarn install"
-        environment env_vars
-        cwd release_path
-      end
+      # execute "yarn install" do
+      #   command "yarn install"
+      #   environment env_vars
+      #   cwd release_path
+      # end
     end
 
     before_restart do

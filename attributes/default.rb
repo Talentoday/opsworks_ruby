@@ -23,14 +23,13 @@ default['deploy']['timeout'] = 600
 default['defaults']['global']['environment'] = 'production'
 default['defaults']['global']['symlinks'] = {
   'system' => 'public/system',
-  'assets' => 'public/assets',
   'cache' => 'tmp/cache',
   'pids' => 'tmp/pids',
   'log' => 'log'
 }
 default['defaults']['global']['create_dirs_before_symlink'] =
-  %w[tmp public config ../../shared/cache ../../shared/assets]
-default['defaults']['global']['purge_before_symlink'] = %w[log tmp/cache tmp/pids public/system public/assets]
+  %w[tmp public config ../../shared/cache]
+default['defaults']['global']['purge_before_symlink'] = %w[log tmp/cache tmp/pids public/system]
 default['defaults']['global']['rollback_on_error'] = false
 default['defaults']['global']['logrotate_rotate'] = 30
 default['defaults']['global']['logrotate_frequency'] = 'daily'
@@ -138,6 +137,8 @@ default['defaults']['framework']['migration_command'] =
   "*) #{node['bundle']} exec rake db:migrate;; " \
   "esac"
 default['defaults']['framework']['assets_precompile'] = true
+default['defaults']['framework']['assets_download_manifests'] = false
+default['defaults']['framework']['manifests_s3_bucket'] = {}
 default['defaults']['framework']['assets_precompilation_command'] = "#{node['bundle']} exec rake assets:precompile"
 default['defaults']['framework']['envs_in_console'] = false
 
