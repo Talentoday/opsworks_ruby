@@ -19,6 +19,7 @@ module Drivers
 
       def configure
         add_worker_monit
+        context.execute 'monit reload'
       end
     end
   end

@@ -10,8 +10,8 @@ module Drivers
 
       def configure
         add_worker_monit
-
         add_scheduler_monit if configure_resque_web
+        context.execute 'monit reload'
       end
 
       def after_deploy
@@ -32,8 +32,6 @@ module Drivers
           source "resque-scheduler.monitrc.erb"
           variables opts
         end
-
-        context.execute 'monit reload'
       end
 
       def restart_scheduler_monit

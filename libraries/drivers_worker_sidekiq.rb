@@ -11,6 +11,7 @@ module Drivers
       def configure
         add_sidekiq_config
         add_worker_monit
+        context.execute 'monit reload'
       end
 
       def before_deploy

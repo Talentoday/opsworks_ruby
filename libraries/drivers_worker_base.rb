@@ -23,8 +23,6 @@ module Drivers
           source "#{opts[:adapter]}.monitrc.erb"
           variables opts
         end
-
-        context.execute 'monit reload'
       end
 
       def restart_monit
