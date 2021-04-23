@@ -6,8 +6,8 @@ module Drivers
       adapter :rails
       allowed_engines :rails
       output filter: %i[
-        migrate migration_command deploy_environment assets_precompile assets_precompilation_command
-        envs_in_console
+        migrate migration_command deploy_environment assets_precompile assets_download_manifests
+        manifests_s3_bucket assets_precompilation_command envs_in_console
       ]
       packages debian: %w[libxml2-dev tzdata zlib1g-dev], rhel: %w[libxml2-devel tzdata zlib-devel]
       log_paths lambda { |context|
@@ -27,11 +27,45 @@ module Drivers
         super
       end
 
+      def deploy_before_restart
+        assets_download_manifests if out[:assets_download_manifests]
+      end
+
       def deploy_after_restart
         setup_rails_console
       end
 
       private
+
+      def assets_download_manifests
+        git_revision = `git --git-dir #{context.release_path}/.git rev-parse --short=10 HEAD`.strip
+        Chef::Log.info("Downloading manifests for git revision #{git_revision}")
+
+        s3_helper = S3Helper.new(
+          access_key: environment["S3_KEY"],
+          secret_key: environment["S3_SECRET"],
+          bucket:     out[:manifests_s3_bucket]["bucket_name"],
+          region:     out[:manifests_s3_bucket]["aws_region"]
+        )
+
+        prefix = "manifests/#{git_revision}-"
+        manifests = s3_helper.objects_by_prefix(prefix).contents
+
+        if manifests.size < 2
+          raise "Abort: missing one or more manifests for rev #{git_revision}"
+        end
+
+        manifests.each do |object|
+          if object.key.include?("manifest.json")
+            packs_path = File.join(context.release_path, "public", "packs")
+            s3_helper.download(object.key, File.join(packs_path, "manifest.json"))
+          elsif object.key.include?(".sprockets")
+            sprockets_path = File.join(context.release_path, "public", "assets")
+            file_name = object.key.gsub(/^manifests\/\w+-/, "")
+            s3_helper.download(object.key, File.join(sprockets_path, file_name))
+          end
+        end
+      end
 
       def database_yml(db_driver)
         return unless db_driver.applicable_for_configuration? && db_driver.can_migrate?

@@ -3,6 +3,7 @@
 libdir = File.expand_path(__dir__)
 require File.join(libdir, 'core_ext')
 require File.join(libdir, 'helpers')
+require File.join(libdir, 's3_helper')
 require File.join(libdir, 'archive')
 require File.join(libdir, 'chef_patches')
 

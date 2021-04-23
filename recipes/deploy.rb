@@ -4,6 +4,11 @@ prepare_recipe
 
 include_recipe 'opsworks_ruby::configure'
 
+chef_gem "aws-sdk-s3" do
+  version "~> 1"
+  action :install
+end
+
 every_enabled_application do |application|
   databases = []
   every_enabled_rds(self, application) do |rds|
